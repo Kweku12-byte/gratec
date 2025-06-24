@@ -1,0 +1,20 @@
+/* This is the custom styling for the scrollbar in the reviews section. */
+/* It is only for browsers like Chrome, Safari, and Edge. */
+
+.reviews-scrollbar::-webkit-scrollbar {
+  height: 8px;
+}
+
+.reviews-scrollbar::-webkit-scrollbar-track {
+  background: #e5e7eb; /* This is a light gray color */
+  border-radius: 10px;
+}
+
+.reviews-scrollbar::-webkit-scrollbar-thumb {
+  background: #facc15; /* This is our brand's yellow color */
+  border-radius: 10px;
+}
+
+.reviews-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #eab308; /* This is a darker yellow for when you hover over it */
+}
