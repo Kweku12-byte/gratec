@@ -94,7 +94,7 @@ export default async function handler(request, response) {
               <li><strong>Temporary Password:</strong> ${temporaryPassword}</li>
             </ul>
             <p>We recommend you change your password after your first login.</p>
-            <p>Click here to log in and start learning: <a href="https://focosmode.com/gratec-courses">Go to Course</a></p>
+            <p>Click here to log in and start learning: <a href="https://gratec-kweku12-bytes-projects.vercel.app/">Go to Course</a></p>
             <p>Thank you,</p>
             <p>The GRATEC Team</p>
             `
