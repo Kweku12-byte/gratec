@@ -1,63 +1,57 @@
 // This is the final version of our Automated Secretary (Serverless Function).
-// It listens for the secret message from Paystack and automatically creates a user account.
+// It now sends a welcome email with the user's login details.
 
-// We need to import the Firebase Admin SDK tools
 import admin from 'firebase-admin';
+// NEW: Import the MailerSend library and its helper classes
+import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
 
 // --- Firebase Admin Initialization ---
-// We will check if the app is already initialized to prevent errors in Vercel's environment.
 if (!admin.apps.length) {
-  // Get the secret JSON key from the Environment Variable we set up in Vercel
   const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_SDK_JSON);
-
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
   });
 }
-
-// Get instances of the auth and firestore services from the admin app
 const db = admin.firestore();
 const auth = admin.auth();
+
+// --- MailerSend Initialization ---
+// We get our secret API key from the Vercel Environment Variables
+const mailerSend = new MailerSend({
+  apiKey: process.env.MAILERSEND_API_KEY,
+});
 
 
 // --- The Main Handler Function ---
 export default async function handler(request, response) {
-  // First, verify the request is a POST from Paystack
   if (request.method !== 'POST') {
     return response.status(405).send('Method Not Allowed');
   }
 
-  // For security, you might want to verify the request comes from Paystack
-  // This is an advanced step, for now we will trust the request.
-
   const paystackEvent = request.body;
 
-  // We only care about the 'charge.success' event
   if (paystackEvent.event === 'charge.success') {
     const customerEmail = paystackEvent.data.customer.email;
-    const customerName = paystackEvent.data.customer.first_name || 'Valued'; // Use first name or a default
+    const customerName = paystackEvent.data.customer.first_name || 'Valued';
 
     if (!customerEmail) {
-      console.error("Webhook Error: Customer email not found in payload.");
+      console.error("Webhook Error: Customer email not found.");
       return response.status(400).send('Customer email not found.');
     }
 
     try {
-      // --- The Magic Happens Here ---
       console.log(`Processing successful payment for: ${customerEmail}`);
-
-      // 1. Check if a user with this email already exists
+      
       let userRecord;
+      let temporaryPassword = null; // We'll store the password here
+
       try {
         userRecord = await auth.getUserByEmail(customerEmail);
         console.log(`User ${customerEmail} already exists. Granting access.`);
       } catch (error) {
-        // If the user does not exist, create them
         if (error.code === 'auth/user-not-found') {
           console.log(`User ${customerEmail} not found. Creating new user.`);
-          
-          // Generate a simple, random temporary password
-          const temporaryPassword = Math.random().toString(36).slice(-8);
+          temporaryPassword = Math.random().toString(36).slice(-8);
 
           userRecord = await auth.createUser({
             email: customerEmail,
@@ -65,30 +59,53 @@ export default async function handler(request, response) {
             password: temporaryPassword,
             displayName: customerName,
           });
-
-          // TODO LATER: Here you would trigger an email to the user
-          // with their login details and temporary password.
-          console.log(`TODO: Send welcome email to ${customerEmail} with temp password: ${temporaryPassword}`);
         } else {
-          // Some other error occurred
           throw error;
         }
       }
 
-      // 2. Grant course access in Firestore (The VIP List)
       const userId = userRecord.uid;
       const userDocRef = db.collection('users').doc(userId);
 
       await userDocRef.set({
         email: customerEmail,
-        has_access: true, // This is the VIP pass!
+        has_access: true,
         purchase_date: new Date().toISOString(),
-      }, { merge: true }); // Use merge to avoid overwriting other data
+      }, { merge: true });
 
       console.log(`Successfully granted course access to user: ${userId}`);
 
-      // 3. Send a success response back to Paystack
-      return response.status(200).json({ message: 'User created and access granted.' });
+      // --- NEW: SEND THE WELCOME EMAIL ---
+      if (temporaryPassword) { // Only send the email if a new user was created
+        const sentFrom = new Sender(process.env.EMAIL_FROM_ADDRESS, process.env.EMAIL_FROM_NAME);
+        const recipients = [new Recipient(customerEmail, customerName)];
+
+        const emailParams = new EmailParams()
+          .setFrom(sentFrom)
+          .setTo(recipients)
+          .setSubject("Welcome to GRATEC! Your Course Access Details")
+          .setHtml(
+            `
+            <h1>Welcome to GRATEC, ${customerName}!</h1>
+            <p>Thank you for your purchase. Your account has been created and you now have full access to the course.</p>
+            <p>You can log in with the following details:</p>
+            <ul>
+              <li><strong>Email:</strong> ${customerEmail}</li>
+              <li><strong>Temporary Password:</strong> ${temporaryPassword}</li>
+            </ul>
+            <p>We recommend you change your password after your first login.</p>
+            <p>Click here to log in and start learning: <a href="https://focosmode.com/gratec-courses">Go to Course</a></p>
+            <p>Thank you,</p>
+            <p>The GRATEC Team</p>
+            `
+          )
+          .setText(`Welcome to GRATEC, ${customerName}! Your login email is ${customerEmail} and your temporary password is ${temporaryPassword}.`);
+        
+        await mailerSend.email.send(emailParams);
+        console.log(`Welcome email sent successfully to ${customerEmail}.`);
+      }
+
+      return response.status(200).json({ message: 'User processed and access granted.' });
 
     } catch (error) {
       console.error('Error processing webhook:', error);
@@ -96,6 +113,5 @@ export default async function handler(request, response) {
     }
   }
 
-  // If the event is not 'charge.success', just acknowledge it
   return response.status(200).json({ message: 'Event received, but not processed.' });
 }
