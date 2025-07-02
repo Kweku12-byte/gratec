@@ -2,24 +2,25 @@
 // It now sends a welcome email with the user's login details.
 
 import admin from 'firebase-admin';
-// NEW: Import the MailerSend library and its helper classes
 import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
 
-// --- Firebase Admin Initialization ---
-if (!admin.apps.length) {
-  const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_SDK_JSON);
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-  });
+// --- Helper function for Firebase Admin Initialization ---
+function initializeFirebaseAdmin() {
+  if (!admin.apps.length) {
+    console.log("Initializing Firebase Admin...");
+    try {
+      const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_SDK_JSON);
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+      console.log("Firebase Admin initialized successfully.");
+    } catch (error) {
+      console.error("CRITICAL: Failed to initialize Firebase Admin. Check FIREBASE_ADMIN_SDK_JSON env var.", error);
+      // We throw the error to stop the function if Firebase can't connect.
+      throw new Error("Firebase Admin initialization failed.");
+    }
+  }
 }
-const db = admin.firestore();
-const auth = admin.auth();
-
-// --- MailerSend Initialization ---
-// We get our secret API key from the Vercel Environment Variables
-const mailerSend = new MailerSend({
-  apiKey: process.env.MAILERSEND_API_KEY,
-});
 
 
 // --- The Main Handler Function ---
@@ -28,22 +29,27 @@ export default async function handler(request, response) {
     return response.status(405).send('Method Not Allowed');
   }
 
-  const paystackEvent = request.body;
+  try {
+    // Initialize Firebase Admin at the start of the function call
+    initializeFirebaseAdmin();
+    const db = admin.firestore();
+    const auth = admin.auth();
 
-  if (paystackEvent.event === 'charge.success') {
-    const customerEmail = paystackEvent.data.customer.email;
-    const customerName = paystackEvent.data.customer.first_name || 'Valued';
+    const paystackEvent = request.body;
 
-    if (!customerEmail) {
-      console.error("Webhook Error: Customer email not found.");
-      return response.status(400).send('Customer email not found.');
-    }
+    if (paystackEvent.event === 'charge.success') {
+      const customerEmail = paystackEvent.data.customer.email;
+      const customerName = paystackEvent.data.customer.first_name || 'Valued';
 
-    try {
+      if (!customerEmail) {
+        console.error("Webhook Error: Customer email not found.");
+        return response.status(400).send('Customer email not found.');
+      }
+
       console.log(`Processing successful payment for: ${customerEmail}`);
       
       let userRecord;
-      let temporaryPassword = null; // We'll store the password here
+      let temporaryPassword = null;
 
       try {
         userRecord = await auth.getUserByEmail(customerEmail);
@@ -75,8 +81,15 @@ export default async function handler(request, response) {
 
       console.log(`Successfully granted course access to user: ${userId}`);
 
-      // --- NEW: SEND THE WELCOME EMAIL ---
-      if (temporaryPassword) { // Only send the email if a new user was created
+      // --- SEND THE WELCOME EMAIL ---
+      if (temporaryPassword) {
+        console.log("Attempting to send welcome email...");
+        
+        // Initialize MailerSend INSIDE the block where it's needed
+        const mailerSend = new MailerSend({
+            apiKey: process.env.MAILERSEND_API_KEY,
+        });
+
         const sentFrom = new Sender(process.env.EMAIL_FROM_ADDRESS, process.env.EMAIL_FROM_NAME);
         const recipients = [new Recipient(customerEmail, customerName)];
 
@@ -85,19 +98,7 @@ export default async function handler(request, response) {
           .setTo(recipients)
           .setSubject("Welcome to GRATEC! Your Course Access Details")
           .setHtml(
-            `
-            <h1>Welcome to GRATEC, ${customerName}!</h1>
-            <p>Thank you for your purchase. Your account has been created and you now have full access to the course.</p>
-            <p>You can log in with the following details:</p>
-            <ul>
-              <li><strong>Email:</strong> ${customerEmail}</li>
-              <li><strong>Temporary Password:</strong> ${temporaryPassword}</li>
-            </ul>
-            <p>We recommend you change your password after your first login.</p>
-            <p>Click here to log in and start learning: <a href="https://gratec-kweku12-bytes-projects.vercel.app/">Go to Course</a></p>
-            <p>Thank you,</p>
-            <p>The GRATEC Team</p>
-            `
+            `<h1>Welcome to GRATEC, ${customerName}!</h1><p>Thank you for your purchase. Your account has been created and you now have full access to the course.</p><p>You can log in with the following details:</p><ul><li><strong>Email:</strong> ${customerEmail}</li><li><strong>Temporary Password:</strong> ${temporaryPassword}</li></ul><p>We recommend you change your password after your first login.</p><p>Click here to log in and start learning: <a href="https://gratec-kweku12-bytes-projects.vercel.app/">Go to Course</a></p><p>Thank you,</p><p>The GRATEC Team</p>`
           )
           .setText(`Welcome to GRATEC, ${customerName}! Your login email is ${customerEmail} and your temporary password is ${temporaryPassword}.`);
         
@@ -108,7 +109,8 @@ export default async function handler(request, response) {
       return response.status(200).json({ message: 'User processed and access granted.' });
 
     } catch (error) {
-      console.error('Error processing webhook:', error);
+      console.error('!!! --- Webhook Processing Error --- !!!');
+      console.error(error);
       return response.status(500).json({ error: 'Internal server error.' });
     }
   }
