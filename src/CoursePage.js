@@ -5,7 +5,7 @@ import { BookOpen, Film } from 'lucide-react';
 
 const CoursePage = ({ user }) => {
   // IMPORTANT: Replace these with your actual Unlisted YouTube video embed links
-  const foundationCourseUrl = "https://youtu.be/eBGC9kcRyKU"; // Example placeholder
+  const foundationCourseUrl = "https://youtu.be/eBGC9kcRyKU?si=G9C6aXg7tyvm-0KO"; // Example placeholder
   const proToolkitCourseUrl = "https://www.youtube.com/embed/dQw4w9WgXcQ"; // Example placeholder
 
   return (
