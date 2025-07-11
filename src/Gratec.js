@@ -259,7 +259,7 @@ const PurchaseSection = () => (
           <span className="text-gray-500 ml-2">One-time payment</span>
         </div>
         <a 
-          href="https://paystack.shop/pay/vkqztjgbu4_test_1752155643892"
+          href="https://paystack.shop/pay/9v0iznffk6"
           target="_blank" 
           rel="noopener noreferrer"
           className="inline-block bg-gray-900 text-white font-bold py-4 px-12 rounded-full text-lg hover:bg-black transition-all duration-300 transform hover:scale-105 w-full md:w-auto"

@@ -5,7 +5,7 @@ import { BookOpen, Film } from 'lucide-react';
 
 const CoursePage = ({ user }) => {
   // IMPORTANT: Replace these with your actual Unlisted YouTube video embed links
-  const foundationCourseUrl = "https://youtu.be/HYgWeENbsak"; // Example placeholder
+  const foundationCourseUrl = "https://youtu.be/eBGC9kcRyKU"; // Example placeholder
   const proToolkitCourseUrl = "https://www.youtube.com/embed/dQw4w9WgXcQ"; // Example placeholder
 
   return (
@@ -19,7 +19,7 @@ const CoursePage = ({ user }) => {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <BookOpen className="w-8 h-8 text-yellow-500"/>
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900">Part 1: The Foundation (6 Hours)</h2>
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900">Part 1: The Foundation (8 Hours)</h2>
             </div>
             <div className="aspect-video bg-black rounded-2xl shadow-lg overflow-hidden">
               <iframe
@@ -37,7 +37,7 @@ const CoursePage = ({ user }) => {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <Film className="w-8 h-8 text-yellow-500"/>
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900">Part 2: The Pro Toolkit (8 Hours)</h2>
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900">Part 2: The Pro Toolkit (2 Hours)</h2>
             </div>
             <div className="aspect-video bg-black rounded-2xl shadow-lg overflow-hidden">
               <iframe
