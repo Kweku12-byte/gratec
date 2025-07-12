@@ -147,7 +147,7 @@ const IntroVideoSection = () => (
           <div className="relative aspect-video bg-black rounded-2xl shadow-2xl overflow-hidden">
             <iframe
               className="w-full h-full"
-              src="https://www.youtube.com/embed/VIDEO_ID_HERE" // IMPORTANT: Replace with your YouTube video ID
+              src="https://youtu.be/u-6RyW_IG8A" // IMPORTANT: Replace with your YouTube video ID
               title="GRATEC Course Introduction"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
