@@ -11,10 +11,10 @@ import CoursePage from './CoursePage';
 
 // DUMMY DATA
 const testimonials = [
-  { name: "Sarah L.", role: "Freelance Developer", quote: "This course is a game-changer...", stars: 5, type: 'text' },
-  { name: "Michael B.", role: "Entrepreneur", quote: "I wanted to build my own e-commerce site...", stars: 5, type: 'text' },
+  { name: "Sarah L.", role: "Freelance Developer", quote: "This course is a game-changer. I went from zero to building professional client websites in weeks. The 8-hour video is pure gold!", stars: 5, type: 'text' },
+  { name: "Michael B.", role: "Entrepreneur", quote: "I wanted to build my own e-commerce site without hiring a dev. GRATEC gave me the confidence and skills. Highly recommended.", stars: 5, type: 'text' },
   { name: "Alex Johnson", role: "Aspiring Developer", videoUrl: "https://videos.pexels.com/video-files/857251/857251-hd_1280_720_25fps.mp4", thumbnail: `https://images.pexels.com/photos/196655/pexels-photo-196655.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1`, type: 'video' },
-  { name: "Emily R.", role: "Marketing Manager", quote: "The clarity and depth of the content are unparalleled...", stars: 5, type: 'text' },
+  { name: "Emily R.", role: "Marketing Manager", quote: "The clarity and depth of the content are unparalleled. I can now manage my company's WordPress site with ease.", stars: 5, type: 'text' },
   { name: "David Chen", role: "Student", videoUrl: "https://videos.pexels.com/video-files/854251/854251-hd_1280_720_30fps.mp4", thumbnail: `https://images.pexels.com/photos/5926382/pexels-photo-5926382.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1`, type: 'video' },
 ];
 
@@ -100,7 +100,7 @@ const HeroSection = () => (
         </h2>
       </div>
       <p className="max-w-3xl mx-auto mt-6 text-lg md:text-xl text-gray-200">
-        Go from beginner to expert with over 14 hours of masterclass content...
+        Go from beginner to expert with over 14 hours of masterclass content. Build stunning, professional websites for clients or your own business. Your journey starts here.
       </p>
       <div className="mt-10">
         <a href="#purchase" className="bg-yellow-400 text-gray-900 font-bold py-4 px-10 rounded-full text-lg hover:bg-yellow-500 transition-all duration-300 transform hover:scale-105 inline-block">
@@ -137,6 +137,41 @@ const StatsSection = () => (
   </section>
 );
 
+// NEW INTRO VIDEO SECTION
+const IntroVideoSection = () => (
+  <section className="py-20 bg-white">
+    <div className="container mx-auto px-6">
+      <div className="flex flex-col lg:flex-row items-center gap-12">
+        {/* Video Player */}
+        <div className="lg:w-1/2 w-full">
+          <div className="relative aspect-video bg-black rounded-2xl shadow-2xl overflow-hidden">
+            <iframe
+              className="w-full h-full"
+              src="https://www.youtube.com/embed/VIDEO_ID_HERE" // IMPORTANT: Replace with your YouTube video ID
+              title="GRATEC Course Introduction"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          </div>
+        </div>
+        {/* Text Content */}
+        <div className="lg:w-1/2 w-full">
+          <h3 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tighter leading-tight">
+            Your Path to a New Career Starts Here.
+          </h3>
+          <p className="mt-4 text-lg text-gray-600">
+            This isn't just another course; it's a life-changing skill. We've seen students go from complete beginners to confident, employed web developers. This course is designed to give you the practical, real-world skills you need to build professional websites and start a new career.
+          </p>
+          <p className="mt-4 text-gray-600">
+            For a single, one-time fee of $99, you get two complete courses. The first 8 hours teach you everything, including how to practice locally on your computer at no cost. The second 2-hour course is a powerful summary to reinforce your knowledge before you start reaching out to clients.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
 const CourseBanner = () => (
   <section className="py-20 bg-gray-50">
     <div className="container mx-auto px-6">
@@ -145,7 +180,7 @@ const CourseBanner = () => (
           Two Courses. One Goal. <span className="text-yellow-400">Mastery.</span>
         </h3>
         <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-          We've structured the learning path for maximum impact...
+          We've structured the learning path for maximum impact. Start with the fundamentals and progress to advanced techniques seamlessly.
         </p>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
@@ -153,28 +188,32 @@ const CourseBanner = () => (
           <div className="relative aspect-video">
             <img src="gratecbanner2.png" alt="WordPress Foundation Course Banner" className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/1280x720/333/FFF?text=Foundation+Course'; }} />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-            <div className="absolute top-4 right-4 bg-yellow-400 text-gray-900 text-sm font-bold py-1 px-3 rounded-full">6 HOURS</div>
+            <div className="absolute top-4 right-4 bg-yellow-400 text-gray-900 text-sm font-bold py-1 px-3 rounded-full">8 HOURS</div>
           </div>
           <div className="p-8">
             <div className="flex items-center gap-3">
               <BookOpen className="w-8 h-8 text-yellow-500" />
               <h4 className="text-2xl font-bold text-gray-900 tracking-tight">The Foundation</h4>
             </div>
-            <p className="mt-3 text-gray-600">Master the WordPress dashboard, themes, plugins...</p>
+            <p className="mt-3 text-gray-600">
+              Master the WordPress dashboard, themes, plugins, and build your first complete website from scratch.
+            </p>
           </div>
         </div>
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300">
           <div className="relative aspect-video">
             <img src="gratecbanner3.png" alt="WordPress Pro Toolkit Course Banner" className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/1280x720/111/FFF?text=Pro+Toolkit+Course'; }} />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-            <div className="absolute top-4 right-4 bg-yellow-400 text-gray-900 text-sm font-bold py-1 px-3 rounded-full">8 HOURS</div>
+            <div className="absolute top-4 right-4 bg-yellow-400 text-gray-900 text-sm font-bold py-1 px-3 rounded-full">2 HOURS</div>
           </div>
           <div className="p-8">
             <div className="flex items-center gap-3">
               <Film className="w-8 h-8 text-yellow-500" />
-              <h4 className="text-2xl font-bold text-gray-900 tracking-tight">The Pro Toolkit</h4>
+              <h4 className="text-2xl font-bold text-gray-900 tracking-tight">The Pro Summary</h4>
             </div>
-            <p className="mt-3 text-gray-600">Dive deep into custom post types, advanced plugins...</p>
+            <p className="mt-3 text-gray-600">
+              A powerful summary course to reinforce your knowledge before reaching out to clients.
+            </p>
           </div>
         </div>
       </div>
@@ -198,7 +237,9 @@ const ReviewsSection = () => {
       <div className="container mx-auto">
         <div className="px-6 text-center">
           <h3 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tighter">Loved by thousands.</h3>
-          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Don't just take our word for it. See what our students have built...</p>
+          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+            Don't just take our word for it. See what our students have built and hear their stories.
+          </p>
         </div>
         <div className="relative mt-12">
           <div ref={scrollContainerRef} className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth pb-8 reviews-scrollbar">
@@ -303,7 +344,9 @@ const Footer = () => (
         </div>
         <div className="bg-gray-800 p-6 rounded-2xl">
           <h3 className="font-semibold text-white tracking-wide">Earnings Showcase</h3>
-          <p className="mt-3 text-gray-400 text-sm">See what our graduates are earning...</p>
+          <p className="mt-3 text-gray-400 text-sm">
+            See what our graduates are earning as freelance WordPress developers.
+          </p>
           <div className="mt-4">
             <span className="text-3xl font-bold text-yellow-400">$75k+/year</span>
             <p className="text-xs text-gray-500">Average first year</p>
@@ -338,6 +381,7 @@ const LandingPage = () => (
   <>
     <HeroSection />
     <StatsSection />
+    <IntroVideoSection />
     <CourseBanner />
     <ReviewsSection />
     <PurchaseSection />
